@@ -116,55 +116,89 @@ require_once __DIR__ . '/../includes/header.php';
        */
       $videos = [
         [
-          'id'    => '_JvnVbGDoeI',
-          'title' => 'Gordon Ramsay: Knife Skills Masterclass',
+          'id'    => 'If2rE7Sagyw',
+          'title' => 'Important Cooking Skills With Gordon Ramsay',
           'tag'   => 'Techniques',
+          'channel' => 'Gordon Ramsay',
+          'desc' => 'A practical skills lesson covering knife work, herbs, fish prep, and core kitchen technique.',
         ],
         [
-          'id'    => 'ql8oMMEQVAQ',
-          'title' => 'How to Make Perfect Pasta Every Time',
-          'tag'   => 'Italian',
-        ],
-        [
-          'id'    => 'pBQjByBDOio',
-          'title' => '10 Essential Kitchen Hacks You Need to Know',
-          'tag'   => 'Kitchen Tips',
+          'id'    => 'UYhKDweME3A',
+          'title' => 'How To Cook The Perfect Pasta',
+          'tag'   => 'Pasta',
+          'channel' => 'Gordon Ramsay',
+          'desc' => 'A focused pasta tutorial with practical tips for timing, texture, and getting a better result every time.',
         ],
         [
           'id'    => 'ZJy1ajvMU1k',
-          'title' => 'How to Make Sushi at Home - Beginner Guide',
+          'title' => 'How To Master 5 Basic Cooking Skills',
+          'tag'   => 'Basics',
+          'channel' => 'Gordon Ramsay',
+          'desc' => 'A beginner-friendly roundup of foundational kitchen skills including pasta, rice, onions, knives, and fish.',
+        ],
+        [
+          'id'    => 'hmCr5b_dnxk',
+          'title' => 'How to Make Sushi At Home',
           'tag'   => 'Japanese',
+          'channel' => 'Ryan Panico',
+          'desc' => 'A home sushi guide covering rice prep, salmon prep, rolls, nigiri, and simple assembly.',
         ],
         [
-          'id'    => 'UPBQHcHGjQM',
-          'title' => 'French Mother Sauces Explained',
-          'tag'   => 'French',
+          'id'    => '8ElZIUqegTg',
+          'title' => 'How to Cook the Perfect Steak',
+          'tag'   => 'Steak',
+          'channel' => 'Luís Andrade',
+          'desc' => 'A steak-cooking lesson focused on heat, searing, timing, and building a strong crust.',
         ],
         [
-          'id'    => 'M3fAkciISGc',
-          'title' => 'Spice 101: Building Flavour in Indian Cooking',
-          'tag'   => 'Indian',
+          'id'    => 'VkOtF4hjZkM',
+          'title' => 'Cooking With Spice',
+          'tag'   => 'Flavour',
+          'channel' => 'Gordon Ramsay',
+          'desc' => 'A flavour-focused tutorial on using spices with more confidence and balance in everyday cooking.',
         ],
       ];
       foreach ($videos as $v):
+        $watchUrl = 'https://www.youtube.com/watch?v=' . rawurlencode($v['id']);
+        $embedUrl = 'https://www.youtube-nocookie.com/embed/' . rawurlencode($v['id']) . '?rel=0';
+        $thumbnailUrl = 'https://i.ytimg.com/vi/' . rawurlencode($v['id']) . '/hqdefault.jpg';
       ?>
       <div class="card video-card">
         <div class="yt-embed-wrap">
-          <iframe
-            width="100%"
-            height="200"
-            src="https://www.youtube.com/embed/<?= htmlspecialchars($v['id']) ?>?rel=0"
-            title="<?= htmlspecialchars($v['title']) ?>"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-            loading="lazy"
-            style="display:block;border-radius:var(--radius-lg) var(--radius-lg) 0 0"
-          ></iframe>
+          <button
+            type="button"
+            class="video-preview js-video-preview"
+            data-embed-url="<?= htmlspecialchars($embedUrl) ?>"
+            data-title="<?= htmlspecialchars($v['title']) ?>"
+            aria-label="Play <?= htmlspecialchars($v['title']) ?>"
+          >
+            <img
+              src="<?= htmlspecialchars($thumbnailUrl) ?>"
+              alt="<?= htmlspecialchars($v['title']) ?>"
+              class="video-preview-image"
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.hidden = false;"
+            />
+            <div class="video-preview-fallback" hidden>
+              <span class="video-preview-chip"><?= htmlspecialchars($v['tag']) ?></span>
+              <strong><?= htmlspecialchars($v['title']) ?></strong>
+            </div>
+            <span class="video-preview-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+          </button>
         </div>
         <div class="card-body" style="padding:1rem 1.25rem">
           <span class="badge badge-cuisine" style="margin-bottom:.4rem"><?= htmlspecialchars($v['tag']) ?></span>
-          <h4 style="font-size:.95rem;line-height:1.4"><?= htmlspecialchars($v['title']) ?></h4>
+          <h4 style="font-size:.95rem;line-height:1.4;margin-bottom:.45rem"><?= htmlspecialchars($v['title']) ?></h4>
+          <p style="font-size:.85rem;margin-bottom:.35rem"><?= htmlspecialchars($v['desc']) ?></p>
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.85rem">Channel: <?= htmlspecialchars($v['channel']) ?></p>
+          <a
+            href="<?= htmlspecialchars($watchUrl) ?>"
+            class="btn btn-sm btn-outline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i class="fab fa-youtube"></i> Open on YouTube
+          </a>
         </div>
       </div>
       <?php endforeach; ?>
@@ -178,5 +212,34 @@ require_once __DIR__ . '/../includes/header.php';
 
   </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.js-video-preview').forEach(function (preview) {
+    preview.addEventListener('click', function () {
+      var embedUrl = preview.getAttribute('data-embed-url');
+      var title = preview.getAttribute('data-title') || 'Embedded YouTube video';
+      var wrap = preview.closest('.yt-embed-wrap');
+
+      if (!embedUrl || !wrap || wrap.querySelector('iframe')) {
+        return;
+      }
+
+      var iframe = document.createElement('iframe');
+      iframe.src = embedUrl + (embedUrl.indexOf('?') !== -1 ? '&' : '?') + 'autoplay=1';
+      iframe.title = title;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'eager';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.style.display = 'block';
+      iframe.style.borderRadius = 'var(--radius-lg) var(--radius-lg) 0 0';
+
+      wrap.innerHTML = '';
+      wrap.appendChild(iframe);
+    });
+  });
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

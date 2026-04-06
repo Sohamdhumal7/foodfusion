@@ -174,6 +174,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ─── LAZY VIDEO EMBEDS ─────────────────────────────── */
+  document.querySelectorAll('.js-video-preview').forEach(preview => {
+    preview.addEventListener('click', () => {
+      const embedUrl = preview.dataset.embedUrl;
+      const title = preview.dataset.title || 'Embedded YouTube video';
+      const wrap = preview.closest('.yt-embed-wrap');
+
+      if (!embedUrl || !wrap || wrap.querySelector('iframe')) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.src = `${embedUrl}${embedUrl.includes('?') ? '&' : '?'}autoplay=1`;
+      iframe.title = title;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'eager';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.style.display = 'block';
+      iframe.style.borderRadius = 'var(--radius-lg) var(--radius-lg) 0 0';
+
+      wrap.innerHTML = '';
+      wrap.appendChild(iframe);
+    });
+  });
+
   /* ─── SCROLL REVEAL ─────────────────────────────────── */
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
